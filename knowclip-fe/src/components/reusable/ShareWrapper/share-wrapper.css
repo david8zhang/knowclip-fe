@@ -1,0 +1,25 @@
+.shareOverlay {
+  z-index: 5;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  left: 0;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  opacity: 0.8;
+  background-color: black;
+}
+
+.shareOverlay p {
+  cursor: pointer;
+  color: white;
+}
+
+
+.shareWrapper {
+  position: relative;
+}

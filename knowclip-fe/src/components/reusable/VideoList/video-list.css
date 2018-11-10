@@ -1,0 +1,46 @@
+.videoList {
+  padding: 10px;
+  width: 100%;
+  overflow-x: scroll;
+  white-space: nowrap;
+  background-color: #222;
+}
+
+.videoWrapper {
+  width: 150px;
+  height: 100%;
+  position: relative;
+  margin-right: 5px;
+  box-sizing: border-box;
+  display: inline-block;
+}
+
+.hover {
+  z-index: 5;
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left: 0;
+  text-align: center;
+}
+
+.videoTitle {
+  overflow: hidden;
+  color: white;
+  font-size: 15px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  width: 0px;
+}
