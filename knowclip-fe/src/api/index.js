@@ -3,7 +3,7 @@ import axios from 'axios';
 const getClipsEndpoint = 'https://api.twitch.tv/helix/clips'
 
 export const getClips = (auth) => {
-  const { channelId } = auth;
+  const { channelId } = auth
   return axios({
     method: 'get',
     url: getClipsEndpoint,

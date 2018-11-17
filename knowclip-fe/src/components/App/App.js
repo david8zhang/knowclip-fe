@@ -20,87 +20,6 @@ const config = {
 };
 firebase.initializeApp(config);
 
-const seedData = [{
-  "id": "MushyElegantJamOSkomodo",
-  "url": "https://clips.twitch.tv/MushyElegantJamOSkomodo",
-  "embed_url": "https://clips.twitch.tv/embed?clip=MushyElegantJamOSkomodo",
-  "broadcaster_id": "39298218",
-  "broadcaster_name": "dakotaz",
-  "creator_id": "101384663",
-  "creator_name": "Alltheselights",
-  "video_id": "",
-  "game_id": "33214",
-  "language": "en",
-  "title": "Don't challenge bob the builder",
-  "view_count": 167469,
-  "created_at": "2018-01-02T12:16:18Z",
-  "thumbnail_url": "https://clips-media-assets2.twitch.tv/170422327-preview-480x272.jpg"
-},
-{
-  "id": "NastyAstutePrariedogSMOrc",
-  "url": "https://clips.twitch.tv/NastyAstutePrariedogSMOrc",
-  "embed_url": "https://clips.twitch.tv/embed?clip=NastyAstutePrariedogSMOrc",
-  "broadcaster_id": "39298218",
-  "broadcaster_name": "dakotaz",
-  "creator_id": "155489089",
-  "creator_name": "Sejr",
-  "video_id": "",
-  "game_id": "33214",
-  "language": "en",
-  "title": "DK's Family Friendly Stream ;)",
-  "view_count": 94179,
-  "created_at": "2018-05-08T07:59:53Z",
-  "thumbnail_url": "https://clips-media-assets2.twitch.tv/236917222-preview-480x272.jpg"
-},
-{
-  "id": "TransparentLaconicKleePanicBasket",
-  "url": "https://clips.twitch.tv/TransparentLaconicKleePanicBasket",
-  "embed_url": "https://clips.twitch.tv/embed?clip=TransparentLaconicKleePanicBasket",
-  "broadcaster_id": "39298218",
-  "broadcaster_name": "dakotaz",
-  "creator_id": "28194986",
-  "creator_name": "MantuxTV",
-  "video_id": "",
-  "game_id": "33214",
-  "language": "en",
-  "title": "Failed win",
-  "view_count": 91542,
-  "created_at": "2017-11-06T12:46:07Z",
-  "thumbnail_url": "https://clips-media-assets2.twitch.tv/147922292-preview-480x272.jpg"
-},
-{
-  "id": "PlacidMildPepperJonCarnage",
-  "url": "https://clips.twitch.tv/PlacidMildPepperJonCarnage",
-  "embed_url": "https://clips.twitch.tv/embed?clip=PlacidMildPepperJonCarnage",
-  "broadcaster_id": "39298218",
-  "broadcaster_name": "dakotaz",
-  "creator_id": "197756292",
-  "creator_name": "Hawki72",
-  "video_id": "",
-  "game_id": "33214",
-  "language": "en",
-  "title": "HAHAHAHAHAHA",
-  "view_count": 67243,
-  "created_at": "2018-04-02T10:19:50Z",
-  "thumbnail_url": "https://clips-media-assets2.twitch.tv/218206067-preview-480x272.jpg"
-},
-{
-  "id": "KitschyClearCodUWot",
-  "url": "https://clips.twitch.tv/KitschyClearCodUWot",
-  "embed_url": "https://clips.twitch.tv/embed?clip=KitschyClearCodUWot",
-  "broadcaster_id": "39298218",
-  "broadcaster_name": "dakotaz",
-  "creator_id": "23648822",
-  "creator_name": "eRaInferno",
-  "video_id": "",
-  "game_id": "33214",
-  "language": "en",
-  "title": "DK finds the worst player ever",
-  "view_count": 59313,
-  "created_at": "2018-04-10T14:37:26Z",
-  "thumbnail_url": "https://clips-media-assets2.twitch.tv/222676874-preview-480x272.jpg"
-}]
-
 export default class App extends React.Component {
   constructor(props) {
     super(props)
@@ -156,11 +75,8 @@ export default class App extends React.Component {
       this.twitch.onAuthorized((auth) => {
         api.getClips(auth).then((res) => {
           let clips = res.data.data
-          if (Object.keys(clips).length === 0) {
-            clips = seedData
-          }
+          console.log('Clips', clips)
           this.setState({ clips })
-          console.log('Clips', clips);
         })
         this.Authentication.setToken(auth.token, auth.userId)
         if (!this.state.finishedLoading) {
@@ -207,10 +123,10 @@ export default class App extends React.Component {
         onClose={() => this.setState({ selectedHighlight: null })}
       >
         <div style={{ flex: 4 }}>
-          <iframe
-            frameBorder="0"
+          <embed
             height='100%'
             width='100%'
+            type='video/mp4'
             src={this.state.selectedHighlight}
           />
         </div>
@@ -285,32 +201,10 @@ export default class App extends React.Component {
     )
   }
 
-  renderMockStream() {
-    return (
-      <div style={{ 
-        position: 'absolute',
-        width: '100vw',
-        height: '100vh',
-        top: '0',
-        left: '0',
-        zIndex: 0
-      }}>
-        <iframe
-          src="https://player.twitch.tv/?channel=broadcasterroyale"
-          height="100%"
-          width="100%"
-          allowFullScreen
-        >
-        </iframe>
-      </div>
-    )
-  }
-
   render() {
     if (this.state.finishedLoading && this.state.isVisible) {
       return (
         <div className="App">
-          { this.renderMockStream() }
           <div style={{ position: 'absolute', width: '100vw', height: '100vh', zIndex: 500 }}>
             { this.renderAlert() }
             { this.renderSelectedVideo() }
