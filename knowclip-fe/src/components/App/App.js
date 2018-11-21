@@ -1,12 +1,12 @@
 import React from 'react'
-import { CopyToClipboard } from 'react-copy-to-clipboard';
 import Authentication from '../../util/Authentication/Authentication'
 import firebase from 'firebase';
 
 /** Components */
-import { VideoList, HoverTrigger, SideWindow, ShareWrapper } from '../reusable';
+import { VideoList, HoverTrigger, SideWindow } from '../reusable';
 
 import * as api from '../../api';
+import * as utils from '../../util/ClipProcessing'
 
 import './App.css'
 
@@ -31,7 +31,6 @@ export default class App extends React.Component {
       finishedLoading: false,
       theme: 'light',
       isVisible: true,
-      clips: [],
       data: {}
     }
     this.index = 0;
@@ -53,32 +52,40 @@ export default class App extends React.Component {
     })
   }
 
-  connectWebsocket() {
-    const anomalyRef = firebase.database().ref('anomalies');
-    anomalyRef.on('value', (res) => {
-      let data = res.val();
-      if (!data) {
-        data = {}
-      }
-      if (Object.keys(this.state.data).length !== 0 && (Object.keys(data).length !== Object.keys(this.state.data).length)) {
-        this.setState({
-          alertMessage: "We've noticed a lull in the activity. Wanna see a highlight?"
-        })
-      }
-      this.setState({ data });
+  fetchClips(state) {
+    api.getClips(state.auth, state.numClips).then((res) => {
+      let clips = utils.sortClips(res.data.data, state.clipsToShow)
+      this.setState({ clips })
     })
+  }
+  
+  componentWillUpdate(nextProps, nextState) {
+    if (nextState.numClips && nextState.clipsToShow && nextState.auth && !nextState.clips) {
+      this.fetchClips(nextState)
+    }
   }
 
   componentDidMount() {
-    this.connectWebsocket();
     if (this.twitch) {
+      this.twitch.configuration.onChanged(() => {
+        let config = this.twitch.configuration.broadcaster ? this.twitch.configuration.broadcaster.content : null
+        try {
+          config = JSON.parse(config)
+        } catch (e) {
+          console.error('Error', e)
+        }
+        console.log('config', config)
+        if (config) {
+          this.setState({
+            numClips: config.numClips,
+            clipsToShow: config.clipsToShow
+          })
+        }
+      })
+
       this.twitch.onAuthorized((auth) => {
-        api.getClips(auth).then((res) => {
-          let clips = res.data.data
-          console.log('Clips', clips)
-          this.setState({ clips })
-        })
         this.Authentication.setToken(auth.token, auth.userId)
+        this.setState({ auth })
         if (!this.state.finishedLoading) {
           // if the component hasn't finished loading (as in we've not set up after getting a token), let's set it up now.
 
@@ -130,6 +137,38 @@ export default class App extends React.Component {
             src={this.state.selectedHighlight}
           />
         </div>
+        <div className='thumbsSection'>
+          <i
+            onClick={() => {
+              if (this.state.thumbState === 'up') {
+                this.setState({ thumbState: null })
+              } else {
+                this.setState({ thumbState: 'up' })
+              }
+            }}
+            className='fas fa-thumbs-up'
+            style={{
+              cursor: 'pointer',
+              margin: 10,
+              color: this.state.thumbState === 'up' ? 'green' : '#ddd'
+            }}
+          />
+          <i
+            onClick={() => {
+              if (this.state.thumbState === 'down') {
+                this.setState({ thumbState: null })
+              } else {
+                this.setState({ thumbState: 'down' })
+              }
+            }}
+            className='fas fa-thumbs-down'
+            style={{
+              cursor: 'pointer',
+              margin: 10,
+              color: this.state.thumbState === 'down' ? 'red' : '#ddd'
+            }}
+          />
+        </div>
       </SideWindow>
     )
   }
@@ -145,15 +184,18 @@ export default class App extends React.Component {
         <h3 style={{ color: 'white', margin: '5px' }}>
           Recent Highlights
         </h3>
-        <VideoList
-          videos={this.state.clips}
-          onClick={(v) => {
-            this.setState({
-              selectedHighlight: v.embed_url,
-              showing: false
-            })
-          }}
-        />
+        {
+          this.state.clips &&
+          <VideoList
+            videos={this.state.clips}
+            onClick={(v) => {
+              this.setState({
+                selectedHighlight: v.embed_url,
+                showing: false
+              })
+            }}
+          />
+        }
       </HoverTrigger>
     )
   }

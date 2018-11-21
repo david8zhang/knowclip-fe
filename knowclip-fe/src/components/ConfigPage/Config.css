@@ -1,5 +1,7 @@
 .Config{
     font-family: Arial, Helvetica, sans-serif;
+    background-color: #eeeeee;
+    padding: 20px;
 }
 
 .Config-light{
@@ -8,4 +10,23 @@
 
 .Config-dark{
     color:#e5e3e8;
+}
+
+.optionWrapper {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.optionWrapper p {
+  color: black;
+  font-size: 15px;
+}
+
+
+.buttonWrapper {
+  margin-top: 25px;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
 }

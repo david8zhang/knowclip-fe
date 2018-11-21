@@ -12,7 +12,9 @@ export default class ConfigPage extends React.Component{
         this.twitch = window.Twitch ? window.Twitch.ext : null
         this.state={
             finishedLoading:false,
-            theme:'light'
+            theme:'light',
+            clipsToShow: 'Most Viewed',
+            numClips: 10
         }
     }
 
@@ -42,16 +44,96 @@ export default class ConfigPage extends React.Component{
             this.twitch.onContext((context,delta)=>{
                 this.contextUpdate(context,delta)
             })
+
+            this.twitch.configuration.onChanged(() => {
+              console.log('Onchanged configuration')
+              let config = this.twitch.configuration.broadcaster ? this.twitch.configuration.broadcaster.content : null
+              try {
+                config = JSON.parse(config)
+              } catch (e) {
+                console.error('Error parsing config:', e)
+              }
+              if (config) {
+                this.setState({
+                  clipsToShow: config.clipsToShow,
+                  numClips: config.numClips
+                })
+              }
+            })
         }
+    }
+
+    renderClipsToShowDropdown() {
+      return (
+        <div className='optionWrapper'>
+          <div style={{ flex: 1 }}>
+            <p>Clips to Show</p>
+          </div>
+          <div style={{ flex: 1 }}>
+            <select
+              style={{ width: '100%' }}
+              defaultValue={this.state.clipsToShow}
+              onChange={(e) => {
+                const clipsToShow = e.target.value
+                this.setState({ clipsToShow })
+              }}
+            >
+              <option value='Most Viewed'>Most Viewed</option>
+              <option value='Most Recent'>Most Recent</option>
+              <option value='Most Thumbs'>Most Likes</option>
+            </select>
+          </div>
+        </div>
+      )
+    }
+
+    renderClipLimitDropdown() {
+      return (
+        <div className='optionWrapper'>
+          <div style={{ flex: 1 }}>
+            <p>Limit Clips</p>
+          </div>
+          <div style={{ flex: 1 }}>
+            <input
+              style={{ width: '100%' }}
+              type='number'
+              value={this.state.numClips}
+              onChange={(event) => {
+                const numClips = event.target.value
+                this.setState({ numClips })
+              }}
+            />
+          </div>
+        </div>
+      )
+    }
+
+    saveConfig() {
+      const { clipsToShow, numClips, } = this.state
+      const config = { clipsToShow, numClips }
+      this.twitch.configuration.set('broadcaster', '1.0', JSON.stringify(config))
+    }
+
+    renderSubmitButton() {
+      return (
+        <div className='buttonWrapper'>
+          <button
+            className='submitButton'
+            onClick={() => this.saveConfig()}
+          >
+            Save Settings
+          </button>
+        </div>
+      )
     }
 
     render(){
         if(this.state.finishedLoading && this.Authentication.isModerator()){
             return(
                 <div className="Config">
-                    <div className={this.state.theme==='light' ? 'Config-light' : 'Config-dark'}>
-                        There is no configuration needed for this extension!
-                    </div>
+                  { this.renderClipsToShowDropdown() }
+                  { this.renderClipLimitDropdown() }
+                  { this.renderSubmitButton() }
                 </div>
             )
         }

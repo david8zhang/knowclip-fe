@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <script src="https://extension-files.twitch.tv/helper/v1/twitch-ext.min.js"></script>
     <script src="https://localhost.rig.twitch.tv:3000/twitch-ext.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
     <title>React Starter</title>
   </head>
   <body>
@@ -14,23 +15,5 @@
       You need to enable JavaScript to run this app.
     </noscript>
     <script src="VideoOverlay.bundle.js"></script>
-    <script>
-      window.fbAsyncInit = function() {
-        FB.init({
-          appId            : 'your-app-id',
-          autoLogAppEvents : true,
-          xfbml            : true,
-          version          : 'v3.2'
-        });
-      };
-    
-      (function(d, s, id){
-         var js, fjs = d.getElementsByTagName(s)[0];
-         if (d.getElementById(id)) {return;}
-         js = d.createElement(s); js.id = id;
-         js.src = "https://connect.facebook.net/en_US/sdk.js";
-         fjs.parentNode.insertBefore(js, fjs);
-       }(document, 'script', 'facebook-jssdk'));
-    </script>
   </body>
 </html>
