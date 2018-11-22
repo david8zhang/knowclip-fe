@@ -8,7 +8,6 @@ body {
 
 .App {
     flex-grow: inherit;
-    padding-top: 100px;
     background-color: transparent;
     width: 100%;
     height: 100%;
@@ -35,4 +34,88 @@ body {
   align-items: center;
   justify-content: center;
   flex-direction: row;
+}
+
+.clipTabWrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+}
+
+.clipTab {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  max-width: 20px;
+  align-items: center;
+  height: 100px;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  cursor: pointer;
+}
+
+.clipTabShowing {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+  background-color: rgba(0, 0, 0, 0.3);
+  max-width: 20px;
+  align-items: center;
+  height: 100px;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+  cursor: pointer;
+}
+
+.clipTab:hover {
+  transform: translateX(-10px);
+  transition: 0.3s ease-in-out;
+}
+
+.bm-menu {
+  overflow: unset !important;
+}
+
+.sideBarWrapper {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  padding: 10px;
+  box-sizing: border-box;
+  background-color: rgba(0, 0, 0, 0.6);
+}
+
+.header h2 {
+  margin: 0px;
+  margin-left: 10px;
+  margin-top: 30px;
+  margin-bottom: 20px;
+  color: white;
+  font-family: 'Avenir', 'open-sans';
+}
+
+.header p {
+  font-family: 'Avenir', 'open-sans';
+  text-align: center;
+  color: #ddd;
+  font-size: 13px;
+  margin: 0px 0px 30px 0px;
+}
+
+.likesWrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  margin: 10px;
+}
+
+.likesWrapper p {
+  font-family: 'Avenir', 'open-sans';
+  margin-left: 10px;
 }

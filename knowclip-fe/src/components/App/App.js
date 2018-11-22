@@ -3,7 +3,8 @@ import Authentication from '../../util/Authentication/Authentication'
 import firebase from 'firebase';
 
 /** Components */
-import { VideoList, HoverTrigger, SideWindow } from '../reusable';
+import { SideWindow, VideoList } from '../reusable';
+import { push as Menu } from 'react-burger-menu'
 
 import * as api from '../../api';
 import * as utils from '../../util/ClipProcessing'
@@ -31,7 +32,11 @@ export default class App extends React.Component {
       finishedLoading: false,
       theme: 'light',
       isVisible: true,
-      data: {}
+      data: {},
+      numClips: '10',
+      clipsToShow: 'Most Recent',
+      numDislikes: 0,
+      numLikes: 0
     }
     this.index = 0;
   }
@@ -54,13 +59,12 @@ export default class App extends React.Component {
 
   fetchClips(state) {
     api.getClips(state.auth, state.numClips).then((res) => {
-      let clips = utils.sortClips(res.data.data, state.clipsToShow)
-      this.setState({ clips })
+      this.setState({ clips: res.data.data })
     })
   }
   
   componentWillUpdate(nextProps, nextState) {
-    if (nextState.numClips && nextState.clipsToShow && nextState.auth && !nextState.clips) {
+    if (nextState.auth && !nextState.clips) {
       this.fetchClips(nextState)
     }
   }
@@ -138,36 +142,44 @@ export default class App extends React.Component {
           />
         </div>
         <div className='thumbsSection'>
-          <i
-            onClick={() => {
-              if (this.state.thumbState === 'up') {
-                this.setState({ thumbState: null })
-              } else {
-                this.setState({ thumbState: 'up' })
-              }
-            }}
-            className='fas fa-thumbs-up'
-            style={{
-              cursor: 'pointer',
-              margin: 10,
-              color: this.state.thumbState === 'up' ? 'green' : '#ddd'
-            }}
-          />
-          <i
-            onClick={() => {
-              if (this.state.thumbState === 'down') {
-                this.setState({ thumbState: null })
-              } else {
-                this.setState({ thumbState: 'down' })
-              }
-            }}
-            className='fas fa-thumbs-down'
-            style={{
-              cursor: 'pointer',
-              margin: 10,
-              color: this.state.thumbState === 'down' ? 'red' : '#ddd'
-            }}
-          />
+          <div className='likesWrapper'>
+            <i
+              onClick={() => {
+                if (this.state.thumbState === 'up') {
+                  this.setState({ thumbState: null })
+                } else {
+                  this.setState({ thumbState: 'up' })
+                }
+              }}
+              className='fas fa-thumbs-up thumbsUpIcon'
+              style={{
+                cursor: 'pointer',
+                color: this.state.thumbState === 'up' ? '#2ecc71' : '#ddd'
+              }}
+            />
+            <p style={{ color: this.state.thumbState === 'up' ? '#2ecc71' : '#ddd' }}>
+              {this.state.numLikes}
+            </p>
+          </div>
+          <div className='likesWrapper'>
+            <i
+              onClick={() => {
+                if (this.state.thumbState === 'down') {
+                  this.setState({ thumbState: null })
+                } else {
+                  this.setState({ thumbState: 'down' })
+                }
+              }}
+              className='fas fa-thumbs-down thumbsDownIcon'
+              style={{
+                cursor: 'pointer',
+                color: this.state.thumbState === 'down' ? 'red' : '#ddd'
+              }}
+            />
+            <p style={{ color: this.state.thumbState === 'down' ? 'red' : '#ddd' }}>
+              {this.state.numDislikes}
+            </p>
+          </div>
         </div>
       </SideWindow>
     )
@@ -178,25 +190,64 @@ export default class App extends React.Component {
       return <div />
     }
     return (
-      <HoverTrigger
-        showing={this.state.showing}
+      <Menu
+        noOverlay
+        outerContainerId='outerContainer'
+        pageWrapId='clipTabWrapper'
+        right
+        customBurgerIcon={false}
+        isOpen={this.state.showing}
+        onStateChange={(state) => {
+          if (!state.isOpen) {
+            this.setState({ showing: false })
+          }
+        }}
+        width='35%'
       >
-        <h3 style={{ color: 'white', margin: '5px' }}>
-          Recent Highlights
-        </h3>
-        {
-          this.state.clips &&
-          <VideoList
-            videos={this.state.clips}
-            onClick={(v) => {
-              this.setState({
-                selectedHighlight: v.embed_url,
-                showing: false
-              })
-            }}
+        <div className='sideBarWrapper'>
+          <div className='header'>
+            <h2>
+              Recent Highlights
+            </h2>
+          </div>
+          {
+            this.state.clips &&
+            <VideoList
+              videos={this.state.clips}
+              onClick={(v) => {
+                this.setState({
+                  selectedHighlight: v.embed_url,
+                  showing: false
+                })
+              }}
+            />
+          }
+        </div>
+      </Menu>
+    )
+  }
+
+  renderHighlightsTab() {
+    return (
+      <div
+        className='clipTabWrapper'
+        id='clipTabWrapper'
+      >
+        <div
+          className={this.state.showing ? 'clipTabShowing' : 'clipTab'}
+          onClick={() => this.setState({ showing: !this.state.showing })}
+          style={{
+            marginRight: this.state.showing ? '0px' : '-10px'
+          }}
+        >
+          <i
+            style={{ color: 'white' }}
+            className={
+              this.state.showing ? 'fas fa-chevron-right' : 'fas fa-chevron-left'
+            }
           />
-        }
-      </HoverTrigger>
+        </div>
+      </div>
     )
   }
 
@@ -247,10 +298,14 @@ export default class App extends React.Component {
     if (this.state.finishedLoading && this.state.isVisible) {
       return (
         <div className="App">
-          <div style={{ position: 'absolute', width: '100vw', height: '100vh', zIndex: 500 }}>
+          <div
+            id='outerContainer'
+            style={{ position: 'absolute', width: '100vw', height: '100vh', zIndex: 500 }}
+          >
             { this.renderAlert() }
             { this.renderSelectedVideo() }
             { this.renderHighlightsBar() }
+            { this.renderHighlightsTab() }
           </div>
         </div>
       )

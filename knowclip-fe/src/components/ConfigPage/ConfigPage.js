@@ -131,9 +131,9 @@ export default class ConfigPage extends React.Component{
         if(this.state.finishedLoading && this.Authentication.isModerator()){
             return(
                 <div className="Config">
-                  { this.renderClipsToShowDropdown() }
-                  { this.renderClipLimitDropdown() }
-                  { this.renderSubmitButton() }
+                  <p style={{ color: 'white' }}>
+                    No Configuration Needed!
+                  </p>
                 </div>
             )
         }

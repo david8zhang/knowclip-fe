@@ -4,12 +4,10 @@ import './side-window.css'
 export const SideWindow = ({ children, onClose }) => {
   return (
     <div className='sideWindow'>
-      <p
-        className='closeText'
+      <i
         onClick={() => onClose()}
-      >
-        Close
-      </p>
+        className='fas fa-times closeIcon'
+      />
       { children }
     </div>
   )
