@@ -39,6 +39,7 @@
     "react-burger-menu": "^2.5.4",
     "react-copy-to-clipboard": "^5.0.1",
     "react-dom": "^16.3.2",
+    "react-grid-layout": "^0.16.6",
     "react-toggle": "^4.0.2",
     "websocket": "^1.0.28"
   },

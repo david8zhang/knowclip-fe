@@ -1,0 +1,17 @@
+.draggableVideoWrapper {
+  max-width: 100%;
+  padding: 15px;
+  opacity: 0.85;
+  height: 50%;
+  background-color: #222;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.draggableVideoWrapperLayout {
+  margin-top: 100px;
+  height: 100% !important;
+  max-height: 100% !important;
+  padding-bottom: 20px;
+}

@@ -3,11 +3,10 @@ import Authentication from '../../util/Authentication/Authentication'
 import firebase from 'firebase';
 
 /** Components */
-import { SideWindow, VideoList } from '../reusable';
+import { SideWindow, VideoList, DraggableVideo } from '../reusable';
 import { push as Menu } from 'react-burger-menu'
 
 import * as api from '../../api';
-import * as utils from '../../util/ClipProcessing'
 
 import './App.css'
 
@@ -78,7 +77,6 @@ export default class App extends React.Component {
         } catch (e) {
           console.error('Error', e)
         }
-        console.log('config', config)
         if (config) {
           this.setState({
             numClips: config.numClips,
@@ -88,6 +86,7 @@ export default class App extends React.Component {
       })
 
       this.twitch.onAuthorized((auth) => {
+        console.log('Token', auth.token)
         this.Authentication.setToken(auth.token, auth.userId)
         this.setState({ auth })
         if (!this.state.finishedLoading) {
@@ -124,6 +123,51 @@ export default class App extends React.Component {
     }
   }
 
+  renderThumbsSection() {
+    return (
+      <div className='thumbsSection'>
+        <div className='likesWrapper'>
+          <i
+            onClick={() => {
+              if (this.state.thumbState === 'up') {
+                this.setState({ thumbState: null })
+              } else {
+                this.setState({ thumbState: 'up' })
+              }
+            }}
+            className='fas fa-thumbs-up thumbsUpIcon'
+            style={{
+              cursor: 'pointer',
+              color: this.state.thumbState === 'up' ? '#2ecc71' : '#ddd'
+            }}
+          />
+          <p style={{ color: this.state.thumbState === 'up' ? '#2ecc71' : '#ddd' }}>
+            {this.state.numLikes}
+          </p>
+        </div>
+        <div className='likesWrapper'>
+          <i
+            onClick={() => {
+              if (this.state.thumbState === 'down') {
+                this.setState({ thumbState: null })
+              } else {
+                this.setState({ thumbState: 'down' })
+              }
+            }}
+            className='fas fa-thumbs-down thumbsDownIcon'
+            style={{
+              cursor: 'pointer',
+              color: this.state.thumbState === 'down' ? 'red' : '#ddd'
+            }}
+          />
+          <p style={{ color: this.state.thumbState === 'down' ? 'red' : '#ddd' }}>
+            {this.state.numDislikes}
+          </p>
+        </div>
+      </div>
+    )
+  }
+
   renderSelectedVideo() {
     if (!this.state.selectedHighlight) {
       return <div />
@@ -133,68 +177,25 @@ export default class App extends React.Component {
         style={{ display: 'flex', flexDirection: 'column' }}
         onClose={() => this.setState({ selectedHighlight: null })}
       >
-        <div style={{ flex: 4 }}>
+        <div style={{ flex: 4, padding: '5px' }}>
           <embed
-            height='100%'
+            height='90%'
             width='100%'
-            type='video/mp4'
             src={this.state.selectedHighlight}
+            type='video/mp4'
           />
-        </div>
-        <div className='thumbsSection'>
-          <div className='likesWrapper'>
-            <i
-              onClick={() => {
-                if (this.state.thumbState === 'up') {
-                  this.setState({ thumbState: null })
-                } else {
-                  this.setState({ thumbState: 'up' })
-                }
-              }}
-              className='fas fa-thumbs-up thumbsUpIcon'
-              style={{
-                cursor: 'pointer',
-                color: this.state.thumbState === 'up' ? '#2ecc71' : '#ddd'
-              }}
-            />
-            <p style={{ color: this.state.thumbState === 'up' ? '#2ecc71' : '#ddd' }}>
-              {this.state.numLikes}
-            </p>
-          </div>
-          <div className='likesWrapper'>
-            <i
-              onClick={() => {
-                if (this.state.thumbState === 'down') {
-                  this.setState({ thumbState: null })
-                } else {
-                  this.setState({ thumbState: 'down' })
-                }
-              }}
-              className='fas fa-thumbs-down thumbsDownIcon'
-              style={{
-                cursor: 'pointer',
-                color: this.state.thumbState === 'down' ? 'red' : '#ddd'
-              }}
-            />
-            <p style={{ color: this.state.thumbState === 'down' ? 'red' : '#ddd' }}>
-              {this.state.numDislikes}
-            </p>
-          </div>
         </div>
       </SideWindow>
     )
   }
 
   renderHighlightsBar() {
-    if (this.state.selectedHighlight) {
-      return <div />
-    }
     return (
       <Menu
+        right
         noOverlay
         outerContainerId='outerContainer'
         pageWrapId='clipTabWrapper'
-        right
         customBurgerIcon={false}
         isOpen={this.state.showing}
         onStateChange={(state) => {
@@ -202,7 +203,7 @@ export default class App extends React.Component {
             this.setState({ showing: false })
           }
         }}
-        width='35%'
+        width='226px'
       >
         <div className='sideBarWrapper'>
           <div className='header'>
@@ -216,8 +217,7 @@ export default class App extends React.Component {
               videos={this.state.clips}
               onClick={(v) => {
                 this.setState({
-                  selectedHighlight: v.embed_url,
-                  showing: false
+                  selectedHighlight: v.embed_url
                 })
               }}
             />
