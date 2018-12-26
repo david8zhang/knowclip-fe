@@ -13,10 +13,19 @@ export default class VideoList extends React.Component {
       <div className='videoList'>
         {
           this.props.videos.map((v) => {
+            const url = v.thumbnail_url;
+            const highlightUrl = `${url.slice(0, url.indexOf('-preview'))}.mp4`;
+            const { title, creator_name, view_count } = v;
+            const payload = {
+              title,
+              highlightUrl,
+              creator_name,
+              view_count
+            }
             return (
               <Video
                 video={v}
-                onClick={() => this.props.onClick(v)}
+                onClick={() => this.props.onClick(payload)}
               />
             )
           })

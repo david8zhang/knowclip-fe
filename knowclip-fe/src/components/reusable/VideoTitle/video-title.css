@@ -1,0 +1,39 @@
+.videoTitleWrapper {
+  display: flex;
+  flex-direction: row;
+}
+
+.videoInfo p {
+  font-family: 'Avenir', 'open-sans';
+  color: white;
+}
+
+.videoViews p {
+  font-family: 'Avenir', 'open-sans';
+  color: white;
+}
+
+.videoInfo {
+  flex: 2;
+}
+
+.videoTitle {
+  font-weight: bolder;
+  font-size: 18px;
+  margin: 0px 0px 5px 5px;
+}
+
+.videoSubtitle {
+  font-size: 13px;
+  margin: 0px 0px 10px 5px;
+}
+
+.videoViews {
+  flex: 1;
+  margin: 0px 0px 10px 5px;
+}
+
+.views {
+  font-size: 15px;
+  text-align: right;
+}

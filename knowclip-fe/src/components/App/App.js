@@ -3,7 +3,7 @@ import Authentication from '../../util/Authentication/Authentication'
 import firebase from 'firebase';
 
 /** Components */
-import { SideWindow, VideoList, DraggableVideo } from '../reusable';
+import { SideWindow, VideoList, VideoTitle } from '../reusable';
 import { push as Menu } from 'react-burger-menu'
 
 import * as api from '../../api';
@@ -178,12 +178,18 @@ export default class App extends React.Component {
         onClose={() => this.setState({ selectedHighlight: null })}
       >
         <div style={{ flex: 4, padding: '5px' }}>
-          <embed
-            height='90%'
-            width='100%'
-            src={this.state.selectedHighlight}
-            type='video/mp4'
+          <VideoTitle
+            title={this.state.selectedHighlight.title}
+            subtitle={this.state.selectedHighlight.creator_name}
+            views={this.state.selectedHighlight.view_count}
           />
+          <video
+            height='80%'
+            width='100%'
+            controls
+          >
+            <source src={this.state.selectedHighlight.highlightUrl} type='video/mp4' />
+          </video>
         </div>
       </SideWindow>
     )
@@ -215,10 +221,9 @@ export default class App extends React.Component {
             this.state.clips &&
             <VideoList
               videos={this.state.clips}
-              onClick={(v) => {
-                this.setState({
-                  selectedHighlight: v.embed_url
-                })
+              onClick={(selectedHighlight) => {
+                this.twitch.rig.log('Selected Highlight', selectedHighlight);
+                this.setState({ selectedHighlight });
               }}
             />
           }
