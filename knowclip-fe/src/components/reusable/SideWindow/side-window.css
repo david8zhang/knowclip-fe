@@ -21,15 +21,17 @@
 }
 
 .closeIcon {
+  font-size: 10px;
+  text-decoration: underline;
   align-self: flex-end;
   color: rgba(255, 255, 255, 0.2);
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   cursor: pointer;
   transform: scale(1);
 }
 
 .closeIcon:hover {
-  color: red;
+  color: white;
   transform: scale(1.2);
   transition: 0.3s ease-in-out;
 }

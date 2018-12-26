@@ -245,12 +245,9 @@ export default class App extends React.Component {
             marginRight: this.state.showing ? '0px' : '-10px'
           }}
         >
-          <i
-            style={{ color: 'white' }}
-            className={
-              this.state.showing ? 'fas fa-chevron-right' : 'fas fa-chevron-left'
-            }
-          />
+          <p style={{ color: 'white' }}>
+            {this.state.showing ? '>' : '<'}
+          </p>
         </div>
       </div>
     )
