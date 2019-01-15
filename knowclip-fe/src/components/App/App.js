@@ -3,8 +3,13 @@ import Authentication from '../../util/Authentication/Authentication'
 import firebase from 'firebase';
 
 /** Components */
-import { SideWindow, VideoList, VideoTitle } from '../reusable';
+import { VideoList, VideoTitle, Tooltip } from '../reusable';
 import { push as Menu } from 'react-burger-menu'
+import Draggable from 'react-draggable';
+import { ResizableBox } from 'react-resizable';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowsAlt, faArrowsAltH } from '@fortawesome/free-solid-svg-icons'
+
 
 import * as api from '../../api';
 
@@ -86,7 +91,6 @@ export default class App extends React.Component {
       })
 
       this.twitch.onAuthorized((auth) => {
-        console.log('Token', auth.token)
         this.Authentication.setToken(auth.token, auth.userId)
         this.setState({ auth })
         if (!this.state.finishedLoading) {
@@ -173,25 +177,53 @@ export default class App extends React.Component {
       return <div />
     }
     return (
-      <SideWindow
-        style={{ display: 'flex', flexDirection: 'column' }}
-        onClose={() => this.setState({ selectedHighlight: null })}
+      <ResizableBox
+        className='sideWindow box'
+        width={300}
+        axis='both'
+        minConstraints={[300, 300]}
+        maxConstraints={[400, 400]}
       >
-        <div style={{ flex: 4, padding: '5px' }}>
+        <div style={{ display: 'flex' }}>
+          <div className='handle' style={{ flex: 4, padding: '10px' }}>
+            <Tooltip text='Click to drag window!'>
+              <FontAwesomeIcon icon={faArrowsAlt} color='#333' />
+            </Tooltip>
+          </div>
+          <div style={{ flex: 1, justifyContent: 'flex-end', padding: '5px 15px 0px 0px' }}>
+            <p
+              onClick={() => this.setState({ selectedHighlight: null })}
+              className='closeIcon'
+            >
+              Close
+            </p>
+          </div>
+        </div>
+        <div style={{ padding: '0px 10px 10px 10px' }}>
           <VideoTitle
             title={this.state.selectedHighlight.title}
             subtitle={this.state.selectedHighlight.creator_name}
             views={this.state.selectedHighlight.view_count}
           />
           <video
+            key={this.state.selectedHighlight.highlightUrl}
             height='80%'
             width='100%'
             controls
           >
             <source src={this.state.selectedHighlight.highlightUrl} type='video/mp4' />
           </video>
+          <div style={{ width: '100%', display: 'flex', flexDirection: 'row-reverse' }}>
+            <Tooltip text='Click here to resize!'>
+              <FontAwesomeIcon
+                icon={faArrowsAltH}
+                style={{ marginBottom: '-5px' }}
+                color='#333'
+              />
+            </Tooltip>
+          </div>
         </div>
-      </SideWindow>
+      </ResizableBox>
     )
   }
 
@@ -296,6 +328,19 @@ export default class App extends React.Component {
     )
   }
 
+  renderPlaceholderTiles() {
+    const divs = [];
+    for (let i = 0; i < 10; i++) {
+      divs.push(
+        <div
+          key={`a${i}`}
+          data-grid={{ x: 0, y: 0, w: 10, h: 10 }}
+        />
+      )
+    }
+    return divs;
+  }
+
   render() {
     if (this.state.finishedLoading && this.state.isVisible) {
       return (
@@ -305,9 +350,27 @@ export default class App extends React.Component {
             style={{ position: 'absolute', width: '100vw', height: '100vh', zIndex: 500 }}
           >
             { this.renderAlert() }
-            { this.renderSelectedVideo() }
-            { this.renderHighlightsBar() }
-            { this.renderHighlightsTab() }
+            <div style={{ display: 'flex', alignItems: 'row', height: '100%' }}>
+              <div style={{ flex: 5, paddingTop: '100px', paddingBottom: '100px' }}>
+                <div style={{ height: '100%', width: '100%', position: 'relative' }}>
+                  <Draggable
+                    bounds="parent"
+                    defaultPosition={{ x:0, y: 0 }}
+                    scale={1}
+                    position={null}
+                    handle='.handle'
+                  >
+                    <div style={{ width: '300px' }}>
+                      { this.renderSelectedVideo() }
+                    </div>
+                  </Draggable>
+                </div>
+              </div>
+              <div style={{ flex: 1 }}>
+                { this.renderHighlightsBar() }
+                { this.renderHighlightsTab() }
+              </div>
+            </div>
           </div>
         </div>
       )
