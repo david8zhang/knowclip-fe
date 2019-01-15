@@ -179,10 +179,10 @@ export default class App extends React.Component {
     return (
       <ResizableBox
         className='sideWindow box'
-        width={250}
-        axis='both'
+        width={275}
+        axis={window.innerHeight < 600 ? 'none' : 'both'}
         minConstraints={[250, 250]}
-        maxConstraints={[300, 300]}
+        maxConstraints={[400, 400]}
       >
         <div style={{ display: 'flex' }}>
           <div className='handle' style={{ flex: 4, padding: '10px' }}>
