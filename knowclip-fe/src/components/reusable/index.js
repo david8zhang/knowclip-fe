@@ -4,3 +4,6 @@ export { ShareWrapper } from './ShareWrapper';
 export { DraggableVideo } from './DraggableVideo';
 export { VideoTitle } from './VideoTitle';
 export { Tooltip } from './Tooltip';
+export { SettingSection } from './SettingSection';
+export { Button } from './Button';
+export { CheckboxSelector } from './CheckboxSelector';

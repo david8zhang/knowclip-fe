@@ -1,0 +1,23 @@
+.sectionWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 10px;
+}
+
+.titleSection {
+  flex: 1;
+}
+
+.titleSection p {
+  font-size: 13px;
+  font-family: 'Avenir', sans-serif;
+}
+
+.optionSection {
+  flex: 2;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+

@@ -1,6 +1,9 @@
 import React from 'react'
 import Authentication from '../../util/Authentication/Authentication'
 
+/** Configuration Sections */
+import { ClipSettings } from './components/ClipSettings';
+
 import './Config.css'
 
 export default class ConfigPage extends React.Component{
@@ -44,22 +47,6 @@ export default class ConfigPage extends React.Component{
             this.twitch.onContext((context,delta)=>{
                 this.contextUpdate(context,delta)
             })
-
-            this.twitch.configuration.onChanged(() => {
-              console.log('Onchanged configuration')
-              let config = this.twitch.configuration.broadcaster ? this.twitch.configuration.broadcaster.content : null
-              try {
-                config = JSON.parse(config)
-              } catch (e) {
-                console.error('Error parsing config:', e)
-              }
-              if (config) {
-                this.setState({
-                  clipsToShow: config.clipsToShow,
-                  numClips: config.numClips
-                })
-              }
-            })
         }
     }
 
@@ -87,53 +74,11 @@ export default class ConfigPage extends React.Component{
       )
     }
 
-    renderClipLimitDropdown() {
-      return (
-        <div className='optionWrapper'>
-          <div style={{ flex: 1 }}>
-            <p>Limit Clips</p>
-          </div>
-          <div style={{ flex: 1 }}>
-            <input
-              style={{ width: '100%' }}
-              type='number'
-              value={this.state.numClips}
-              onChange={(event) => {
-                const numClips = event.target.value
-                this.setState({ numClips })
-              }}
-            />
-          </div>
-        </div>
-      )
-    }
-
-    saveConfig() {
-      const { clipsToShow, numClips, } = this.state
-      const config = { clipsToShow, numClips }
-      this.twitch.configuration.set('broadcaster', '1.0', JSON.stringify(config))
-    }
-
-    renderSubmitButton() {
-      return (
-        <div className='buttonWrapper'>
-          <button
-            className='submitButton'
-            onClick={() => this.saveConfig()}
-          >
-            Save Settings
-          </button>
-        </div>
-      )
-    }
-
     render(){
         if(this.state.finishedLoading && this.Authentication.isModerator()){
             return(
                 <div className="Config">
-                  <p style={{ color: 'white' }}>
-                    No Configuration Needed!
-                  </p>
+                  <ClipSettings />
                 </div>
             )
         }

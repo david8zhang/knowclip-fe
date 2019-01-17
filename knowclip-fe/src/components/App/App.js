@@ -74,6 +74,11 @@ export default class App extends React.Component {
   }
 
   componentDidMount() {
+    this.setState({ height: window.innerHeight });
+    // Set the window height as a state option
+    window.onresize = () => {
+      this.setState({ height: window.innerHeight });
+    }
     if (this.twitch) {
       this.twitch.configuration.onChanged(() => {
         let config = this.twitch.configuration.broadcaster ? this.twitch.configuration.broadcaster.content : null
@@ -179,8 +184,8 @@ export default class App extends React.Component {
     return (
       <ResizableBox
         className='sideWindow box'
-        width={275}
-        axis={window.innerHeight < 600 ? 'none' : 'both'}
+        width={this.state.height < 500 ? 275 : 300}
+        axis={this.state.height < 500 ? 'none' : 'both'}
         minConstraints={[250, 250]}
         maxConstraints={[400, 400]}
       >

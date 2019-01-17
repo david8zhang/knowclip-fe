@@ -1,0 +1,35 @@
+.checkboxWrapper {
+  display: flex;
+  margin-right: -20px;
+}
+
+.checkboxInput {
+  font-size: 12px;
+  margin-right: 20px;
+}
+
+/* Customize the label (the container) */
+.radioContainer {
+  display: block;
+  position: relative;
+  padding-left: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.formIcon {
+  background: #fff;
+  border-radius: .2rem;
+  content: "";
+  height: .4rem;
+  left: 50%;
+  margin-left: -.2rem;
+  margin-top: -.2rem;
+  position: absolute;
+  top: 50%;
+  width: .4rem;
+}
