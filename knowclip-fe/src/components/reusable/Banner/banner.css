@@ -1,0 +1,17 @@
+.banner {
+  width: 100%;
+  padding: 10px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.banner p {
+  color: white;
+  font-size: 15px;
+  font-weight: bolder;
+  text-align: center;
+  flex: 4;
+  margin: 0px;
+  font-family: 'Avenir', 'sans-serif';
+}

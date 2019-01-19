@@ -1,0 +1,14 @@
+.loading {
+  flex: 1;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.loading p {
+  font-weight: bolder;
+  font-size: 40px;
+  color: rgb(0, 81, 255);
+}

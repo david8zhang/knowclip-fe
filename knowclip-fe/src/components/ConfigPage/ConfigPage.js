@@ -1,8 +1,15 @@
 import React from 'react'
 import Authentication from '../../util/Authentication/Authentication'
 
+/** Reusable components */
+import { Button, Banner } from '../reusable';
+
 /** Configuration Sections */
 import { ClipSettings } from './components/ClipSettings';
+import { LayoutSettings } from './components/LayoutSettings';
+
+/** APIs */
+import * as configApi from '../../api/configHandler';
 
 import './Config.css'
 
@@ -16,15 +23,19 @@ export default class ConfigPage extends React.Component{
         this.state={
             finishedLoading:false,
             theme:'light',
-            clipsToShow: 'Most Viewed',
-            numClips: 10
+            resizing: true,
+            dragging: true,
+            limit: 'No Limit',
+            sortBy: 'Most Recent'
         }
     }
 
     contextUpdate(context, delta){
-        if(delta.includes('theme')){
+        if (delta.includes('theme')) {
             this.setState(()=>{
-                return {theme:context.theme}
+                return {
+                  theme:context.theme
+                }
             })
         }
     }
@@ -37,10 +48,7 @@ export default class ConfigPage extends React.Component{
                 if(!this.state.finishedLoading){
                     // if the component hasn't finished loading (as in we've not set up after getting a token), let's set it up now.
     
-                    // now we've done the setup for the component, let's set the state to true to force a rerender with the correct data.
-                    this.setState(()=>{
-                        return {finishedLoading:true}
-                    })
+                    this.fetchConfig(auth.channelId);
                 }
             })
     
@@ -50,36 +58,97 @@ export default class ConfigPage extends React.Component{
         }
     }
 
-    renderClipsToShowDropdown() {
-      return (
-        <div className='optionWrapper'>
-          <div style={{ flex: 1 }}>
-            <p>Clips to Show</p>
-          </div>
-          <div style={{ flex: 1 }}>
-            <select
-              style={{ width: '100%' }}
-              defaultValue={this.state.clipsToShow}
-              onChange={(e) => {
-                const clipsToShow = e.target.value
-                this.setState({ clipsToShow })
-              }}
-            >
-              <option value='Most Viewed'>Most Viewed</option>
-              <option value='Most Recent'>Most Recent</option>
-              <option value='Most Thumbs'>Most Likes</option>
-            </select>
-          </div>
-        </div>
-      )
+    fetchConfig(userId) {
+      configApi.getConfig(userId).then((config) => {
+        if (config) {
+          this.setState({
+            limit: config.limit,
+            sortBy: config.sortBy,
+            resizing: config.resizing,
+            dragging: config.dragging
+          })
+        }
+        this.setState({
+          finishedLoading:true,
+          userId: userId
+        })
+      }).catch((err) => {
+        Promise.reject(err);
+      })
     }
 
-    render(){
-        if(this.state.finishedLoading && this.Authentication.isModerator()){
+    saveConfig() {
+      const { limit, sortBy, resizing, dragging, userId } = this.state
+      const newConfig = {
+        limit,
+        sortBy,
+        resizing,
+        dragging
+      }
+      this.setState({ finishedLoading: false })
+      configApi.updateOrCreateConfig({ config: newConfig, broadcasterId: userId })
+        .then(() => {
+          console.log('Successfully updated configuration!');
+          this.setState({
+            finishedLoading: true,
+            successBanner: 'Successfully updated configuration!'
+          })
+        })
+        .catch((err) => {
+          console.error('Error!', err);
+          Promise.reject(err);
+        })
+    }
+
+    renderAlertBanner() {
+      if (this.state.successBanner) {
+        return (
+          <Banner
+            type='success'
+            text={this.state.successBanner}
+            onClose={() => this.setState({ successBanner: null })}
+          />
+        )
+      } else if (this.state.errorBanner) {
+        return (
+          <Banner
+            type='error'
+            text={this.state.errorBanner}
+            onClose={() => this.setState({ errorBanner: null })}
+          />
+        )
+      }
+    }
+
+    render() {
+        const setConfig = (key, value) => this.setState({ [key]: value });
+        if (this.state.finishedLoading && this.Authentication.isModerator()) {
             return(
-                <div className="Config">
-                  <ClipSettings />
+                <div style={{ height: '100%' }}>
+                  { this.renderAlertBanner() }
+                  <div className="Config">
+                    <ClipSettings
+                      defaultValues={{
+                        sortBy: this.state.sortBy,
+                        limit: this.state.limit
+                      }}
+                      setConfig={setConfig}
+                    />
+                    <LayoutSettings
+                      defaultValues={{
+                        dragging: this.state.dragging,
+                        resizing: this.state.resizing
+                      }}
+                      setConfig={setConfig}
+                    />
+                    <Button
+                      style={{ marginTop: '30px' }}
+                      buttonText='Save Settings'
+                      onClick={() => this.saveConfig()}
+                    />
+                  </div>
                 </div>
+
             )
         }
         else{
@@ -92,4 +161,4 @@ export default class ConfigPage extends React.Component{
             )
         }
     }
-}
+} 

@@ -11,13 +11,15 @@ class ClipSettings extends Component {
         </p>
         <SettingSection title='Sort Clips By'>
           <CheckboxSelector
-            setValue={(value) => console.log('Value!', value)}
+            defaultValue={this.props.defaultValues['sortBy']}
+            setValue={(sortBy) => this.props.setConfig('sortBy', sortBy)}
             inputs={['Most Recent', 'Most Views']}
           />
         </SettingSection>
         <SettingSection title='Limit Number of Clips'>
           <CheckboxSelector
-            setValue={(value) => console.log('Value!', value)}
+            defaultValue={this.props.defaultValues['limit']}
+            setValue={(limit) => this.props.setConfig('limit', limit)}
             inputs={['0', '5', '10', '20', 'No Limit']}
           />
         </SettingSection>

@@ -7,3 +7,5 @@ export { Tooltip } from './Tooltip';
 export { SettingSection } from './SettingSection';
 export { Button } from './Button';
 export { CheckboxSelector } from './CheckboxSelector';
+export { Loader } from './Loader';
+export { Banner } from './Banner';

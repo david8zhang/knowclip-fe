@@ -7,14 +7,17 @@ class CheckboxSelector extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      optionSelected: ''
+      optionSelected: props.defaultValue
     }
   }
   renderInputs() {
     if (this.props.inputs) {
       return this.props.inputs.map((value) => {
         return (
-          <div className='checkboxInput'>
+          <div
+            className='checkboxInput'
+            key={value}
+          >
             <FontAwesomeIcon
               icon={this.state.optionSelected === value ? faDotCircle : faCircle}
               style={{
