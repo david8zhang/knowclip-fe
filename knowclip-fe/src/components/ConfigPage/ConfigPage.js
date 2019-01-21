@@ -94,6 +94,9 @@ export default class ConfigPage extends React.Component{
             showFeatured: false,
             defaultFeaturedClips: featuredClipIds
           })
+          setTimeout(() => {
+            this.setState({ successBanner: null })
+          }, 2000)
         })
         .catch((err) => {
           console.error(err);
@@ -103,6 +106,9 @@ export default class ConfigPage extends React.Component{
             errorBanner: 'An error occured',
             showFeatured: false
           })
+          setTimeout(() => {
+            this.setState({ errorBanner: null })
+          }, 2000)
         })
     }
 
@@ -117,6 +123,9 @@ export default class ConfigPage extends React.Component{
             showHidden: false,
             defaultHiddenClips: hiddenClipIds
           })
+          setTimeout(() => {
+            this.setState({ successBanner: null })
+          }, 2000)
         })
         .catch((err) => {
           console.error(err);
@@ -126,6 +135,9 @@ export default class ConfigPage extends React.Component{
             errorBanner: 'An error occured',
             showHidden: false
           })
+          setTimeout(() => {
+            this.setState({ errorBanner: null })
+          }, 2000)
         })
     }
 
@@ -145,6 +157,9 @@ export default class ConfigPage extends React.Component{
             finishedLoading: true,
             successBanner: 'Successfully updated configuration!'
           })
+          setTimeout(() => {
+            this.setState({ successBanner: null })
+          }, 2000)
         })
         .catch((err) => {
           console.error('Error!', err);
