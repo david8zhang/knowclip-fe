@@ -79,7 +79,6 @@ export default class App extends React.Component {
 
         // Fetch the configurations saved for this broadcaster
         configApi.getConfig(auth.channelId).then((config) => {
-          console.log('Config', config);
           this.setState({ config });
         })
 

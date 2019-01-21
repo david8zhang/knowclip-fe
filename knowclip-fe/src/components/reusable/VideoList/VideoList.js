@@ -21,15 +21,13 @@ export default class VideoList extends React.Component {
         return this.props.hiddenIds.indexOf(c.id) === -1
       })
     }
-    if (this.props.featuredIds) {
-      filteredVideos.forEach((v) => {
-        if (this.props.featuredIds.indexOf(v.id) !== -1) {
-          featuredVideos.push(v);
-        } else {
-          regularVideos.push(v);
-        }
-      })
-    }
+    filteredVideos.forEach((v) => {
+      if (this.props.featuredIds && this.props.featuredIds.indexOf(v.id) !== -1) {
+        featuredVideos.push(v);
+      } else {
+        regularVideos.push(v);
+      }
+    })
     regularVideos.sort((a, b) => {
       const aTime = new Date(a.created_at).getTime();
       const bTime = new Date(b.created_at).getTime();

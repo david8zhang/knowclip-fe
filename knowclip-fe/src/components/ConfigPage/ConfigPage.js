@@ -12,7 +12,6 @@ import { ClipSettings } from './components/ClipSettings';
 import { LayoutSettings } from './components/LayoutSettings';
 import { ClipPicker } from './components/ClipPicker';
 
-
 /** APIs */
 import * as configApi from '../../api/configHandler';
 
@@ -66,7 +65,6 @@ export default class ConfigPage extends React.Component{
     fetchConfig(userId) {
       configApi.getConfig(userId).then((config) => {
         if (config) {
-          console.log('Config', config)
           this.setState({
             limit: config.limit,
             sortBy: config.sortBy,
