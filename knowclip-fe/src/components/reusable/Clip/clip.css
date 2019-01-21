@@ -1,0 +1,27 @@
+.clipWrapper {
+  background-color: white;
+  box-shadow: 2px 2px 2px 2px #888888;
+  border-radius: 2px;
+  position: relative;
+  cursor: pointer;
+  box-sizing: border-box;
+  display: inline-block;
+  margin: 10px;
+  padding: 10px;
+}
+
+.clipTitle {
+  font-size: 15px;
+  margin: 0px 5px 0px 10px;
+  font-family: 'Avenir', 'sans-serif';
+  color:black;
+  font-weight: bolder;
+}
+
+.clipCreator {
+  font-size: 12px;
+  margin: 0px 5px 0px 10px;
+  margin-bottom: 10px;
+  font-family: 'Avenir', 'sans-serif';
+  color: #888888;
+}

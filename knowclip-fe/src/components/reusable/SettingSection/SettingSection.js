@@ -1,9 +1,8 @@
 import React from 'react'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons'
+import { HelpIcon } from '../HelpIcon';
 import './setting-section.css';
 
-export const SettingSection = ({ title, children }) => {
+export const SettingSection = ({ title, children, helpText }) => {
   return (
     <div className='sectionWrapper'>
       <div className='titleSection'>
@@ -11,11 +10,7 @@ export const SettingSection = ({ title, children }) => {
       </div>
       <div className='optionSection'>
         { children }
-        <FontAwesomeIcon
-          onClick={() => console.log('Clicked help!')}
-          style={{ fontSize: '15px', color: '#555', marginLeft: '10px', cursor: 'pointer' }}
-          icon={faQuestionCircle}
-        />
+        <HelpIcon helpText={helpText} />
       </div>
     </div>
   )

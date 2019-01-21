@@ -5,12 +5,13 @@
     height: 100%;
 }
 
-.Config-light{
-    color:#232127;
+.Config-dark p {
+    color:white !important;
 }
 
-.Config-dark{
-    color:#e5e3e8;
+.Config-dark {
+  color: white !important;
+  background-color: black;
 }
 
 .optionWrapper {

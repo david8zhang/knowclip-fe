@@ -9,30 +9,44 @@ class ClipSettings extends Component {
         <p className='sectionTitle'>
           Clips Settings
         </p>
-        <SettingSection title='Sort Clips By'>
+        <SettingSection
+          title='Sort Clips By'
+          helpText='How your clips will be ordered'
+        >
           <CheckboxSelector
+            theme={this.props.theme}
             defaultValue={this.props.defaultValues['sortBy']}
             setValue={(sortBy) => this.props.setConfig('sortBy', sortBy)}
             inputs={['Most Recent', 'Most Views']}
           />
         </SettingSection>
-        <SettingSection title='Limit Number of Clips'>
+        <SettingSection
+          title='Limit Number of Clips'
+          helpText='Max number of clips to show'
+        >
           <CheckboxSelector
+            theme={this.props.theme}
             defaultValue={this.props.defaultValues['limit']}
             setValue={(limit) => this.props.setConfig('limit', limit)}
-            inputs={['0', '5', '10', '20', 'No Limit']}
+            inputs={['5', '10', '20', 'No Limit']}
           />
         </SettingSection>
-        <SettingSection title='Custom Featured Clips'>
+        <SettingSection
+          title='Custom Featured Clips'
+          helpText='Clips you want to push to the top'
+        >
           <Button
             buttonText='Edit Featured Clips'
-            onClick={() => console.log('Edited featured clips')}
+            onClick={() => this.props.onFeatured()}
           />
         </SettingSection>
-        <SettingSection title='Hidden Clips'>
+        <SettingSection
+          title='Hidden Clips'
+          helpText='Clips you want to hide'
+        >
           <Button
             buttonText='Edit Hidden Clips'
-            onClick={() => console.log('Edited hidden clips')}
+            onClick={() => this.props.onHidden()}
           />
         </SettingSection>
       </div>

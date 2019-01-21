@@ -1,0 +1,40 @@
+.clipPickerWrapper {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.pickerDark {
+  background-color: black;
+  color: white !important;
+}
+
+.clipPickerTitle {
+  font-size: 18px;
+  margin-left: 10px;
+  margin-bottom: 20px;
+  font-family: 'Avenir', 'sans-serif';
+  font-weight: bolder;
+}
+
+.placeholder p {
+  font-size: 15px;
+  text-align: center;
+  font-family: 'Avenir', 'sans-serif';
+  color: #444;
+}
+
+.placeholder {
+  padding: 10px;
+}
+
+.clipGrid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.clipList {
+  display: block;
+  width: 100%;
+  overflow-x: scroll;
+}

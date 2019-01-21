@@ -152,6 +152,6 @@ body {
 
 .closeIcon:hover {
   color: white;
-  transform: scale(1.2);
+  transform: scale(1.5);
   transition: 0.3s ease-in-out;
 }

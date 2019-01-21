@@ -1,6 +1,5 @@
 import React from 'react'
 import Authentication from '../../util/Authentication/Authentication'
-import firebase from 'firebase';
 
 /** Components */
 import { VideoList, VideoTitle, Tooltip } from '../reusable';
@@ -8,22 +7,18 @@ import { push as Menu } from 'react-burger-menu'
 import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faArrowsAlt, faArrowsAltH } from '@fortawesome/free-solid-svg-icons'
-
+import { 
+  faArrowsAlt, 
+  faArrowsAltH, 
+  faChevronLeft, 
+  faChevronRight, 
+  faTimes 
+} from '@fortawesome/free-solid-svg-icons'
 
 import * as api from '../../api';
+import * as configApi from '../../api/configHandler';
 
 import './App.css'
-
-const config = {
-  apiKey: "AIzaSyCSQjPTzOyNKW7GiV3fu7DwtyOfb1bqqRs",
-  authDomain: "twitch-hackathon-55882.firebaseapp.com",
-  databaseURL: "https://twitch-hackathon-55882.firebaseio.com",
-  projectId: "twitch-hackathon-55882",
-  storageBucket: "twitch-hackathon-55882.appspot.com",
-  messagingSenderId: "84835985605"
-};
-firebase.initializeApp(config);
 
 export default class App extends React.Component {
   constructor(props) {
@@ -36,11 +31,9 @@ export default class App extends React.Component {
       finishedLoading: false,
       theme: 'light',
       isVisible: true,
+      isFirstTime: true,
       data: {},
-      numClips: '10',
-      clipsToShow: 'Most Recent',
-      numDislikes: 0,
-      numLikes: 0
+      config: {}
     }
     this.index = 0;
   }
@@ -62,7 +55,7 @@ export default class App extends React.Component {
   }
 
   fetchClips(state) {
-    api.getClips(state.auth, state.numClips).then((res) => {
+    api.getClips(state.auth, state.config.limit).then((res) => {
       this.setState({ clips: res.data.data })
     })
   }
@@ -80,24 +73,16 @@ export default class App extends React.Component {
       this.setState({ height: window.innerHeight });
     }
     if (this.twitch) {
-      this.twitch.configuration.onChanged(() => {
-        let config = this.twitch.configuration.broadcaster ? this.twitch.configuration.broadcaster.content : null
-        try {
-          config = JSON.parse(config)
-        } catch (e) {
-          console.error('Error', e)
-        }
-        if (config) {
-          this.setState({
-            numClips: config.numClips,
-            clipsToShow: config.clipsToShow
-          })
-        }
-      })
-
       this.twitch.onAuthorized((auth) => {
         this.Authentication.setToken(auth.token, auth.userId)
         this.setState({ auth })
+
+        // Fetch the configurations saved for this broadcaster
+        configApi.getConfig(auth.channelId).then((config) => {
+          console.log('Config', config);
+          this.setState({ config });
+        })
+
         if (!this.state.finishedLoading) {
           // if the component hasn't finished loading (as in we've not set up after getting a token), let's set it up now.
 
@@ -185,23 +170,38 @@ export default class App extends React.Component {
       <ResizableBox
         className='sideWindow box'
         width={this.state.height < 500 ? 275 : 300}
-        axis={this.state.height < 500 ? 'none' : 'both'}
+        axis={(this.state.height < 500 || !this.state.config.resizing) ? 'none' : 'both'}
         minConstraints={[250, 250]}
         maxConstraints={[400, 400]}
       >
         <div style={{ display: 'flex' }}>
           <div className='handle' style={{ flex: 4, padding: '10px' }}>
-            <Tooltip text='Click to drag window!'>
-              <FontAwesomeIcon icon={faArrowsAlt} color='#333' />
-            </Tooltip>
+            {
+              this.state.config.dragging &&
+              <Tooltip
+                text='Click to drag window!'
+                showing={this.state.isFirstTime}
+              >
+                <FontAwesomeIcon icon={faArrowsAlt} color='#333' />
+              </Tooltip>
+            }
           </div>
-          <div style={{ flex: 1, justifyContent: 'flex-end', padding: '5px 15px 0px 0px' }}>
-            <p
-              onClick={() => this.setState({ selectedHighlight: null })}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row-reverse',
+              padding: '10px'
+            }}
+          >
+            <FontAwesomeIcon
+              onClick={() => this.setState({
+                selectedHighlight: null,
+                isFirstTime: false
+              })}
               className='closeIcon'
-            >
-              Close
-            </p>
+              icon={faTimes}
+              style={{ color: 'red' }}
+            />
           </div>
         </div>
         <div style={{ padding: '0px 10px 10px 10px' }}>
@@ -219,13 +219,19 @@ export default class App extends React.Component {
             <source src={this.state.selectedHighlight.highlightUrl} type='video/mp4' />
           </video>
           <div style={{ width: '100%', display: 'flex', flexDirection: 'row-reverse' }}>
-            <Tooltip text='Click here to resize!'>
-              <FontAwesomeIcon
-                icon={faArrowsAltH}
-                style={{ marginBottom: '-5px' }}
-                color='#333'
-              />
-            </Tooltip>
+            {
+              this.state.config.resizing &&
+              <Tooltip
+                text='Click here to resize!'
+                showing={this.state.isFirstTime}
+              >
+                <FontAwesomeIcon
+                  icon={faArrowsAltH}
+                  style={{ marginBottom: '-5px' }}
+                  color='#333'
+                />
+              </Tooltip>
+            }
           </div>
         </div>
       </ResizableBox>
@@ -257,10 +263,15 @@ export default class App extends React.Component {
           {
             this.state.clips &&
             <VideoList
+              sortBy={this.state.config.sortBy}
+              featuredIds={this.state.config.featuredClips}
+              hiddenIds={this.state.config.hiddenClips}
               videos={this.state.clips}
               onClick={(selectedHighlight) => {
                 this.twitch.rig.log('Selected Highlight', selectedHighlight);
-                this.setState({ selectedHighlight });
+                this.setState({
+                  selectedHighlight
+                });
               }}
             />
           }
@@ -282,9 +293,10 @@ export default class App extends React.Component {
             marginRight: this.state.showing ? '0px' : '-10px'
           }}
         >
-          <p style={{ color: 'white' }}>
-            {this.state.showing ? '>' : '<'}
-          </p>
+          <FontAwesomeIcon
+            icon={this.state.showing ? faChevronRight : faChevronLeft}
+            style={{ color: 'white', fontSize: '15px' }}
+          />
         </div>
       </div>
     )
@@ -364,6 +376,7 @@ export default class App extends React.Component {
                     scale={1}
                     position={null}
                     handle='.handle'
+                    disabled={!this.state.config.dragging}
                   >
                     <div style={{ width: '300px' }}>
                       { this.renderSelectedVideo() }

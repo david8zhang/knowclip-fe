@@ -1,12 +1,10 @@
 import { firebase } from './firebase';
 
 export const updateOrCreateConfig = ({ config, broadcasterId }) => {
-  const configRef = firebase.database().ref('config');
+  const configRef = firebase.database().ref(`config/${broadcasterId}`);
   const newConfig = Object.assign({}, config);
   newConfig.broadcasterId = broadcasterId;
-  return configRef.update({
-    [broadcasterId]: newConfig
-  });
+  return configRef.update(newConfig);
 };
 
 
@@ -18,5 +16,19 @@ export const getConfig = (broadcasterId) => {
       return null;
     }
     return data;
+  })
+}
+
+export const saveFeaturedClips = ({ featuredClipIds, broadcasterId }) => {
+  const configRef = firebase.database().ref(`config/${broadcasterId}`)
+  return configRef.update({
+    featuredClips: featuredClipIds
+  })
+}
+
+export const saveHiddenClips = ({ hiddenClipIds, broadcasterId }) => {
+  const configRef = firebase.database().ref(`config/${broadcasterId}`)
+  return configRef.update({
+    hiddenClips: hiddenClipIds
   })
 }

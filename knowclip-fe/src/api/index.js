@@ -2,14 +2,18 @@ import axios from 'axios';
 
 const getClipsEndpoint = 'https://api.twitch.tv/helix/clips'
 
-export const getClips = (auth) => {
+export const getClips = (auth, limit) => {
   const { channelId } = auth
+  const params = {
+    broadcaster_id: channelId
+  }
+  if (limit && limit !== 'No Limit') {
+    params.first = parseInt(limit, 10);
+  }
   return axios({
     method: 'get',
     url: getClipsEndpoint,
-    params: {
-      broadcaster_id: channelId,
-    },
+    params,
     headers: {
       'Client-ID': '30th7suthnt9wop5i09l573cj6ptqn'
     }

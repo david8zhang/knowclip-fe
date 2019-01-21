@@ -66,6 +66,13 @@
   width: 0px;
 }
 
+.featured {
+  color: #c5eff7;
+  font-size: 12px;
+  font-family: 'Avenir', 'open-sans';
+  margin-bottom: 5px;
+}
+
 .title {
   font-size: 15px;
   overflow: hidden;

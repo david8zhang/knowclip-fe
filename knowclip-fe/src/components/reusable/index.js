@@ -9,3 +9,6 @@ export { Button } from './Button';
 export { CheckboxSelector } from './CheckboxSelector';
 export { Loader } from './Loader';
 export { Banner } from './Banner';
+export { SearchBar } from './SearchBar';
+export { Clip } from './Clip';
+export { HelpIcon } from './HelpIcon';

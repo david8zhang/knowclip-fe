@@ -2,11 +2,16 @@ import React from 'react'
 import Authentication from '../../util/Authentication/Authentication'
 
 /** Reusable components */
+import Modal from 'react-modal';
 import { Button, Banner } from '../reusable';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 
 /** Configuration Sections */
 import { ClipSettings } from './components/ClipSettings';
 import { LayoutSettings } from './components/LayoutSettings';
+import { ClipPicker } from './components/ClipPicker';
+
 
 /** APIs */
 import * as configApi from '../../api/configHandler';
@@ -61,11 +66,14 @@ export default class ConfigPage extends React.Component{
     fetchConfig(userId) {
       configApi.getConfig(userId).then((config) => {
         if (config) {
+          console.log('Config', config)
           this.setState({
             limit: config.limit,
             sortBy: config.sortBy,
             resizing: config.resizing,
-            dragging: config.dragging
+            dragging: config.dragging,
+            defaultFeaturedClips: config.featuredClips,
+            defaultHiddenClips: config.hiddenClips
           })
         }
         this.setState({
@@ -75,6 +83,52 @@ export default class ConfigPage extends React.Component{
       }).catch((err) => {
         Promise.reject(err);
       })
+    }
+
+    saveFeaturedClips(featuredClips) {
+      const featuredClipIds = featuredClips.map((c) => c.id);
+      this.setState({ finishedLoading: false });
+      configApi.saveFeaturedClips({ featuredClipIds, broadcasterId: this.state.userId })
+        .then(() => {
+          this.setState({
+            finishedLoading: true,
+            successBanner: 'Successfully updated featured clips',
+            showFeatured: false,
+            defaultFeaturedClips: featuredClipIds
+          })
+        })
+        .catch((err) => {
+          console.error(err);
+          Promise.reject(err);
+          this.setState({
+            finishedLoading: true,
+            errorBanner: 'An error occured',
+            showFeatured: false
+          })
+        })
+    }
+
+    saveHiddenClips(hiddenClips) {
+      const hiddenClipIds = hiddenClips.map((c) => c.id);
+      this.setState({ finishedLoading: false });
+      configApi.saveHiddenClips({ hiddenClipIds, broadcasterId: this.state.userId })
+        .then(() => {
+          this.setState({
+            finishedLoading: true,
+            successBanner: 'Successfully updated hidden clips',
+            showHidden: false,
+            defaultHiddenClips: hiddenClipIds
+          })
+        })
+        .catch((err) => {
+          console.error(err);
+          Promise.reject(err);
+          this.setState({
+            finishedLoading: true,
+            errorBanner: 'An error occured',
+            showHidden: false
+          })
+        })
     }
 
     saveConfig() {
@@ -120,18 +174,90 @@ export default class ConfigPage extends React.Component{
       }
     }
 
+    renderFeaturedClips() {
+      return (
+        <Modal
+          style={{
+            content: {
+              backgroundColor: this.state.theme === 'dark' ? 'black' : 'white'
+            }
+          }}
+          isOpen={this.state.showFeatured}
+        >
+          <FontAwesomeIcon
+            style={{
+              color: '#aaa',
+              fontSize: '18px',
+              cursor: 'pointer'
+            }}
+            icon={faTimes}
+            onClick={() => this.setState({ showFeatured: false })}
+          />
+          <ClipPicker
+            theme={this.state.theme}
+            title='Featured Clips'
+            helpText='Choose clips you want to feature. These will appear at the top!'
+            defaultChosen={this.state.defaultFeaturedClips}
+            hidden={this.state.defaultHiddenClips}
+            channelId={this.state.userId}
+            saveSettings={(featuredClips) => {
+              this.saveFeaturedClips(featuredClips);
+            }}
+          />
+        </Modal>
+      )
+    }
+
+    renderHiddenClips() {
+      return (
+        <Modal
+          style={{
+            content: {
+              backgroundColor: this.state.theme === 'dark' ? 'black' : 'white'
+            }
+          }}
+          isOpen={this.state.showHidden}
+        >
+          <FontAwesomeIcon
+            style={{
+              color: '#aaa',
+              fontSize: '18px',
+              cursor: 'pointer'
+            }}
+            icon={faTimes}
+            onClick={() => this.setState({ showHidden: false })}
+          />
+          <ClipPicker
+            theme={this.state.theme}
+            title='Hidden Clips'
+            helpText='Choose clips you want to hide from your viewers (offensive, duplicates, etc.)'
+            defaultChosen={this.state.defaultHiddenClips}
+            hidden={this.state.defaultFeaturedClips}
+            channelId={this.state.userId}
+            saveSettings={(hiddenClips) => {
+              this.saveHiddenClips(hiddenClips);
+            }}
+          />
+        </Modal>
+      )
+    }
+
     render() {
         const setConfig = (key, value) => this.setState({ [key]: value });
         if (this.state.finishedLoading && this.Authentication.isModerator()) {
             return(
                 <div style={{ height: '100%' }}>
                   { this.renderAlertBanner() }
-                  <div className="Config">
+                  { this.renderFeaturedClips() }
+                  { this.renderHiddenClips() }
+                  <div className={`Config ${this.state.theme === 'dark' ? 'Config-dark': "Config-light"}`}>
                     <ClipSettings
                       defaultValues={{
                         sortBy: this.state.sortBy,
                         limit: this.state.limit
                       }}
+                      onFeatured={() => this.setState({ showFeatured: true })}
+                      onHidden={() => this.setState({ showHidden: true })}
                       setConfig={setConfig}
                     />
                     <LayoutSettings
@@ -141,11 +267,18 @@ export default class ConfigPage extends React.Component{
                       }}
                       setConfig={setConfig}
                     />
-                    <Button
-                      style={{ marginTop: '30px' }}
-                      buttonText='Save Settings'
-                      onClick={() => this.saveConfig()}
-                    />
+                    <div
+                      style={{
+                        marginTop: '30px',
+                        display: 'flex',
+                        flexDirection: 'row-reverse'
+                      }}
+                    >
+                      <Button
+                        buttonText='Save Settings'
+                        onClick={() => this.saveConfig()}
+                      />
+                    </div>
                   </div>
                 </div>
 

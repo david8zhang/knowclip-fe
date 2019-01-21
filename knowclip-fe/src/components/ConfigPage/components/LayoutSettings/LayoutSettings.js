@@ -14,13 +14,19 @@ class LayoutSettings extends Component {
         <p className='sectionTitle'>
           Layout Settings
         </p>
-        <SettingSection title='Enable / Disable Player Dragging'>
+        <SettingSection
+          title='Enable / Disable Player Dragging'
+          helpText='Allow/Disallow viewer to drag around the clip player'
+        >
           <Toggle
             defaultChecked={this.props.defaultValues['dragging']}
             onChange={(e) => { this.props.setConfig('dragging', e.target.checked) }}
           />
         </SettingSection>
-        <SettingSection title='Enable / Disable Player Resizing'>
+        <SettingSection
+          title='Enable / Disable Player Resizing'
+          helpText='Allow/Disallow viewer to resize the clip player'
+        >
           <Toggle
             defaultChecked={this.props.defaultValues['resizing']}
             onChange={(e) => { this.props.setConfig('resizing', e.target.checked) }}

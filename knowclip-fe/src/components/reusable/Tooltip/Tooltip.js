@@ -7,7 +7,7 @@ export class Tooltip extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showing: true
+      showing: props.showing
     };
   }
   render() {
