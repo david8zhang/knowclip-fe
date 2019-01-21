@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faQuestionCircle } from '@fortawesome/free-solid-svg-icons';
 
 export const HelpIcon = ({ helpText }) => {
-  const id = `${Date.now()}`;
+  const id = `${helpText}-${Date.now()}`;
   return (
     <div style={{ display: 'inline' }}>
       <a data-tip={id} data-for={id}>
@@ -18,7 +18,7 @@ export const HelpIcon = ({ helpText }) => {
         type='info'
         place='right'
       >
-        <p style={{ fontFamily: 'Avenir', fontSize: '10px', fontWeight: 'unset' }}>
+        <p style={{ fontFamily: 'Avenir, Helvetica', fontSize: '10px', fontWeight: 'unset' }}>
           { helpText }
         </p>
       </ReactTooltip>

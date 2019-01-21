@@ -13,14 +13,14 @@
   font-size: 18px;
   margin-left: 10px;
   margin-bottom: 20px;
-  font-family: 'Avenir', 'sans-serif';
+  font-family: 'Avenir', 'Helvetica';
   font-weight: bolder;
 }
 
 .placeholder p {
   font-size: 15px;
   text-align: center;
-  font-family: 'Avenir', 'sans-serif';
+  font-family: 'Avenir', 'Helvetica';
   color: #444;
 }
 
