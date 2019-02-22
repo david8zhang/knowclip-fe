@@ -1,2 +1,2 @@
 # knowclip
-KnowClip - Grand Prize Winner of TwitchCon Hackathon 2018
+KnowClip - Drive viewer engagement through clip overlayment!
