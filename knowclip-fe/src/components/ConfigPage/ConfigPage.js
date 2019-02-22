@@ -29,7 +29,7 @@ export default class ConfigPage extends React.Component{
             theme:'light',
             resizing: true,
             dragging: true,
-            limit: 'No Limit',
+            clipLimit: 'No Limit',
             sortBy: 'Most Recent'
         }
     }
@@ -66,7 +66,7 @@ export default class ConfigPage extends React.Component{
       configApi.getConfig(userId).then((config) => {
         if (config) {
           this.setState({
-            limit: config.limit,
+            clipLimit: config.clipLimit,
             sortBy: config.sortBy,
             resizing: config.resizing,
             dragging: config.dragging,
@@ -86,7 +86,7 @@ export default class ConfigPage extends React.Component{
     saveFeaturedClips(featuredClips) {
       const featuredClipIds = featuredClips.map((c) => c.id);
       this.setState({ finishedLoading: false });
-      configApi.saveFeaturedClips({ featuredClipIds, broadcasterId: this.state.userId })
+      configApi.updateFeaturedClips({ featuredClips: featuredClipIds, broadcasterId: this.state.userId })
         .then(() => {
           this.setState({
             finishedLoading: true,
@@ -115,7 +115,7 @@ export default class ConfigPage extends React.Component{
     saveHiddenClips(hiddenClips) {
       const hiddenClipIds = hiddenClips.map((c) => c.id);
       this.setState({ finishedLoading: false });
-      configApi.saveHiddenClips({ hiddenClipIds, broadcasterId: this.state.userId })
+      configApi.updateHiddenClips({ hiddenClips: hiddenClipIds, broadcasterId: this.state.userId })
         .then(() => {
           this.setState({
             finishedLoading: true,
@@ -142,9 +142,9 @@ export default class ConfigPage extends React.Component{
     }
 
     saveConfig() {
-      const { limit, sortBy, resizing, dragging, userId } = this.state
+      const { clipLimit, sortBy, resizing, dragging, userId } = this.state
       const newConfig = {
-        limit,
+        clipLimit,
         sortBy,
         resizing,
         dragging
@@ -267,7 +267,7 @@ export default class ConfigPage extends React.Component{
                     <ClipSettings
                       defaultValues={{
                         sortBy: this.state.sortBy,
-                        limit: this.state.limit
+                        clipLimit: this.state.clipLimit
                       }}
                       onFeatured={() => this.setState({ showFeatured: true })}
                       onHidden={() => this.setState({ showHidden: true })}

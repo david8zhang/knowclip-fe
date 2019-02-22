@@ -61,6 +61,8 @@ module.exports = (_env,argv)=> {
     }    
   }
 
+  console.log('entry', entry);
+
   let config={
     //entry points for webpack- remove if not used/needed
     entry,
@@ -73,7 +75,7 @@ module.exports = (_env,argv)=> {
           test: /\.(js|jsx)$/,
           exclude: /(node_modules|bower_components)/,
           loader: 'babel-loader',
-          options: { presets: ['env'] }
+          options: { presets: ['env', 'es2015'] }
         },
         {
           test: /\.css$/,

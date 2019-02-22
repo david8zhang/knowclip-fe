@@ -1,34 +1,85 @@
-import { firebase } from './firebase';
+import { endpoints } from './endpoints';
+import 'isomorphic-fetch';
 
 export const updateOrCreateConfig = ({ config, broadcasterId }) => {
-  const configRef = firebase.database().ref(`config/${broadcasterId}`);
-  const newConfig = Object.assign({}, config);
-  newConfig.broadcasterId = broadcasterId;
-  return configRef.update(newConfig);
+  const getURL = `${endpoints.config}?broadcasterId=${broadcasterId}`
+  return fetch(getURL, {
+    method: 'GET',
+  }).then((res) => {
+    const existingConfig = res.json();
+    const newConfig = config;
+    newConfig.broadcasterId = broadcasterId;
+    if (!res.ok) {
+      return fetch(endpoints.config, {
+        method: 'POST',
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newConfig)
+      }).then((res) => {
+        console.log(res.ok);
+      }).catch((err) => {
+        console.error('Something went wrong during config creation!', err);
+      })
+    }
+    try {
+      if (existingConfig) {
+        return fetch(endpoints.config, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newConfig)
+        }).then((res) => {
+          console.log(res);
+        }).catch((err) => {
+          console.error('Something went wrong during config update!', err);
+        })
+      }
+    } catch (err) {
+      console.error('Something went wrong during response parsing!', err);
+    }
+  }).catch((err) => {
+    console.log(err);
+    return null;
+  })
 };
 
+export const updateFeaturedClips = ({ featuredClips, broadcasterId }) => {
+  return fetch(`${endpoints.config}/featuredClips`, {
+    method: 'PUT',
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      featuredClips,
+      broadcasterId
+    })
+  })
+}
+
+export const updateHiddenClips = ({ hiddenClips, broadcasterId }) => {
+  return fetch(`${endpoints.config}/hiddenClips`, {
+    method: 'PUT',
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      hiddenClips,
+      broadcasterId
+    })
+  })
+}
 
 export const getConfig = (broadcasterId) => {
-  const configRef = firebase.database().ref(`config/${broadcasterId}`)
-  return configRef.once('value').then((res) => {
-    const data = res.val();
-    if (!data) {
-      return null;
-    }
-    return data;
+  return fetch(`${endpoints.config}?broadcasterId=${broadcasterId}`, {
+    method: 'GET'
   })
-}
-
-export const saveFeaturedClips = ({ featuredClipIds, broadcasterId }) => {
-  const configRef = firebase.database().ref(`config/${broadcasterId}`)
-  return configRef.update({
-    featuredClips: featuredClipIds
-  })
-}
-
-export const saveHiddenClips = ({ hiddenClipIds, broadcasterId }) => {
-  const configRef = firebase.database().ref(`config/${broadcasterId}`)
-  return configRef.update({
-    hiddenClips: hiddenClipIds
-  })
+    .then((res) => {
+      if (!res.ok) {
+        return null;
+      } else {
+        try {
+          return res.json();
+        } catch (err) {
+          console.error('Something went wrong during response parsing');
+        }
+      }
+    }).catch((err) => {
+      console.error('Something went wrong during fetch!', err);
+    })
 }

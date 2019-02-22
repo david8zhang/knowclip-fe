@@ -33,7 +33,10 @@ export default class App extends React.Component {
       isVisible: true,
       isFirstTime: true,
       data: {},
-      config: {}
+      config: {
+        resizing: true,
+        dragging: true
+      }
     }
     this.index = 0;
   }
@@ -216,6 +219,7 @@ export default class App extends React.Component {
             height='80%'
             width='100%'
             controls
+            muted
           >
             <source src={this.state.selectedHighlight.highlightUrl} type='video/mp4' />
           </video>

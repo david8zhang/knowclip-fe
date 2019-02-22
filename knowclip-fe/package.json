@@ -8,7 +8,8 @@
     "build": "webpack --mode production",
     "start": "webpack-dev-server --mode development",
     "cert": "./bin/generate_cert.sh server",
-    "host": "webpack-dev-server --mode development --devrig"
+    "host": "webpack-dev-server --mode development --devrig",
+    "script": "node ./scripts/updateOrCreate.test.js"
   },
   "keywords": [],
   "author": "",
@@ -18,7 +19,9 @@
     "babel-core": "^6.26.0",
     "babel-jest": "^23.4.2",
     "babel-loader": "^7.1.4",
+    "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
+    "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
     "css-loader": "^0.28.11",
     "enzyme": "^3.4.1",
@@ -37,6 +40,7 @@
     "@fortawesome/react-fontawesome": "^0.1.3",
     "axios": "^0.18.0",
     "firebase": "^5.5.6",
+    "isomorphic-fetch": "^2.2.1",
     "jsonwebtoken": "^8.3.0",
     "react": "^16.6.0",
     "react-burger-menu": "^2.5.4",

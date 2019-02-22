@@ -26,9 +26,9 @@ class ClipSettings extends Component {
         >
           <CheckboxSelector
             theme={this.props.theme}
-            defaultValue={this.props.defaultValues['limit']}
-            setValue={(limit) => this.props.setConfig('limit', limit)}
-            inputs={['5', '10', '20', 'No Limit']}
+            defaultValue={this.props.defaultValues['clipLimit']}
+            setValue={(limit) => this.props.setConfig('clipLimit', limit)}
+            inputs={[5, 10, 20, 'No Limit']}
           />
         </SettingSection>
         <SettingSection
