@@ -16,6 +16,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons'
 
 import * as api from '../../api';
+import * as userApi from '../../api/userHandler';
+import * as likesApi from '../../api/likesHandler';
 import * as configApi from '../../api/configHandler';
 
 import './App.css'
@@ -36,7 +38,8 @@ export default class App extends React.Component {
       config: {
         resizing: true,
         dragging: true
-      }
+      },
+      likesData: {}
     }
     this.index = 0;
   }
@@ -62,10 +65,32 @@ export default class App extends React.Component {
       this.setState({ clips: res.data.data })
     })
   }
+
+  fetchLikes(state) {
+    const broadcasterId = state.auth.channelId
+    likesApi.fetchLikes(broadcasterId, state.auth.token).then((res) => {
+      let likesData = {};
+      if (res.length > 0) {
+        res.forEach((v) => {
+          likesData[v.clipId] = v.likes;
+        })
+      }
+      this.setState({ likes: likesData });
+    })
+  }
+ 
+  fetchUserMetadata(state) {
+    const userId = state.auth.userId;
+    userApi.fetchUser(userId, state.auth.token).then((res) => {
+      this.setState({ user: res })
+    })
+  }
   
   componentWillUpdate(nextProps, nextState) {
     if (nextState.auth && !nextState.clips) {
       this.fetchClips(nextState)
+      this.fetchLikes(nextState);
+      this.fetchUserMetadata(nextState);
     }
   }
 
@@ -81,7 +106,7 @@ export default class App extends React.Component {
         this.setState({ auth })
 
         // Fetch the configurations saved for this broadcaster
-        configApi.getConfig(auth.channelId).then((config) => {
+        configApi.getConfig(auth.channelId, auth.token).then((config) => {
           if (config) {
             this.setState({ config });
           }
@@ -118,6 +143,58 @@ export default class App extends React.Component {
   componentWillUnmount() {
     if (this.twitch) {
       this.twitch.unlisten('broadcast', () => console.log('successfully unlistened'))
+    }
+  }
+
+  addLike(isLiked) {
+    if (this.state.auth.userId.charAt(0) !== 'A') {
+      const params = {
+        clipId: this.state.selectedHighlight.clip_id,
+        broadcasterId: this.state.auth.channelId,
+        userId: this.state.auth.userId,
+        token: this.state.auth.token
+      }
+      if (!isLiked) {
+        likesApi.addLike(params).then(() => {
+          const newLikes = JSON.parse(JSON.stringify(this.state.likes));
+          const selectedClipId = this.state.selectedHighlight.clip_id;
+          if (!newLikes[selectedClipId]) {
+            newLikes[selectedClipId] = 1;
+          } else {
+            newLikes[selectedClipId] += 1;
+          }
+
+          let newUser = JSON.parse(JSON.stringify(this.state.user));
+          if (!newUser) {
+            newUser = { userId: this.state.auth.userId, likedClips: [selectedClipId] }
+          } else {
+            if (!newUser.likedClips) {
+              newUser.likedClips = [selectedClipId]
+            } else {
+              newUser.likedClips = newUser.likedClips.concat(selectedClipId);
+            }
+          }
+
+          this.setState({
+            likes: newLikes,
+            user: newUser
+          })
+        })
+      } else {
+        likesApi.revokeLike(params).then(() => {
+          const newLikes = JSON.parse(JSON.stringify(this.state.likes));
+          const selectedClipId = this.state.selectedHighlight.clip_id;
+          newLikes[selectedClipId] -= 1;
+
+          let newUser = JSON.parse(JSON.stringify(this.state.user));
+          newUser.likedClips = newUser.likedClips.filter((id) => id !== selectedClipId);
+
+          this.setState({
+            likes: newLikes,
+            user: newUser
+          })
+        })
+      }
     }
   }
 
@@ -170,6 +247,16 @@ export default class App extends React.Component {
     if (!this.state.selectedHighlight) {
       return <div />
     }
+    let isLiked = false;
+    if (this.state.user && this.state.user.likedClips) {
+      const clip_id = this.state.selectedHighlight.clip_id;
+      isLiked = this.state.user.likedClips.indexOf(clip_id) !== -1;
+    }
+
+    let selectedLikeCount = this.state.likes[this.state.selectedHighlight.clip_id];
+    if (!selectedLikeCount) {
+      selectedLikeCount = 0;
+    }
     return (
       <ResizableBox
         className='sideWindow box'
@@ -213,6 +300,14 @@ export default class App extends React.Component {
             title={this.state.selectedHighlight.title}
             subtitle={this.state.selectedHighlight.creator_name}
             views={this.state.selectedHighlight.view_count}
+            likes={selectedLikeCount}
+            isLiked={isLiked}
+            isLoggedIn={this.state.auth.userId.charAt(0) !== 'A'}
+            onLike={(isLiked) => { 
+              if (this.state.auth.userId.charAt(0) !== 'A') {
+                this.addLike(isLiked)
+              }
+            }}
           />
           <video
             key={this.state.selectedHighlight.highlightUrl}
@@ -273,9 +368,8 @@ export default class App extends React.Component {
               hiddenIds={this.state.config.hiddenClips}
               videos={this.state.clips}
               onClick={(selectedHighlight) => {
-                this.twitch.rig.log('Selected Highlight', selectedHighlight);
                 this.setState({
-                  selectedHighlight
+                  selectedHighlight,
                 });
               }}
             />

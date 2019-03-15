@@ -47,12 +47,13 @@ export default class VideoList extends React.Component {
           featuredVideos.map((v) => {
             const url = v.thumbnail_url;
             const highlightUrl = `${url.slice(0, url.indexOf('-preview'))}.mp4`;
-            const { title, creator_name, view_count } = v;
+            const { title, creator_name, view_count, id } = v;
             const payload = {
               title,
               highlightUrl,
               creator_name,
-              view_count
+              view_count,
+              clip_id: id
             }
             return (
               <Video
@@ -68,12 +69,13 @@ export default class VideoList extends React.Component {
           regularVideos.map((v) => {
             const url = v.thumbnail_url;
             const highlightUrl = `${url.slice(0, url.indexOf('-preview'))}.mp4`;
-            const { title, creator_name, view_count } = v;
+            const { title, creator_name, view_count, id } = v;
             const payload = {
               title,
               highlightUrl,
               creator_name,
-              view_count
+              view_count,
+              clip_id: id
             }
             return (
               <Video

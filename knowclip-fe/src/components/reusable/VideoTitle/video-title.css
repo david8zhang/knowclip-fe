@@ -8,12 +8,13 @@
   color: white;
 }
 
-.videoViews p {
+.statsWrapper p {
   font-family: 'Avenir', 'open-sans';
   color: white;
 }
 
 .videoInfo {
+  cursor: default;
   flex: 2;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -31,12 +32,21 @@
   margin: 0px 0px 10px 5px;
 }
 
-.videoViews {
+.statsWrapper {
+  cursor: default;
   flex: 1;
   margin: 0px 0px 10px 5px;
 }
 
-.views {
+.stats {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.statsText {
   font-size: 13px;
   text-align: right;
+  flex: 1;
+  margin: 0px;
 }

@@ -1,10 +1,13 @@
 import { endpoints } from './endpoints';
 import 'isomorphic-fetch';
 
-export const updateOrCreateConfig = ({ config, broadcasterId }) => {
+export const updateOrCreateConfig = ({ config, broadcasterId, token }) => {
   const getURL = `${endpoints.config}?broadcasterId=${broadcasterId}`
   return fetch(getURL, {
     method: 'GET',
+    headers: {
+      Authorization: token
+    }
   }).then((res) => {
     const existingConfig = res.json();
     const newConfig = config;
@@ -13,7 +16,8 @@ export const updateOrCreateConfig = ({ config, broadcasterId }) => {
       return fetch(endpoints.config, {
         method: 'POST',
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
+          Authorization: token
         },
         body: JSON.stringify(newConfig)
       }).then((res) => {
@@ -26,7 +30,10 @@ export const updateOrCreateConfig = ({ config, broadcasterId }) => {
       if (existingConfig) {
         return fetch(endpoints.config, {
           method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: token
+          },
           body: JSON.stringify(newConfig)
         }).then((res) => {
           console.log(res);
@@ -43,10 +50,13 @@ export const updateOrCreateConfig = ({ config, broadcasterId }) => {
   })
 };
 
-export const updateFeaturedClips = ({ featuredClips, broadcasterId }) => {
+export const updateFeaturedClips = ({ featuredClips, broadcasterId, token }) => {
   return fetch(`${endpoints.config}/featuredClips`, {
     method: 'PUT',
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      'Authorization': token
+    },
     body: JSON.stringify({
       featuredClips,
       broadcasterId
@@ -54,10 +64,13 @@ export const updateFeaturedClips = ({ featuredClips, broadcasterId }) => {
   })
 }
 
-export const updateHiddenClips = ({ hiddenClips, broadcasterId }) => {
+export const updateHiddenClips = ({ hiddenClips, broadcasterId, token }) => {
   return fetch(`${endpoints.config}/hiddenClips`, {
     method: 'PUT',
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      'Authorization': token
+    },
     body: JSON.stringify({
       hiddenClips,
       broadcasterId
@@ -65,9 +78,12 @@ export const updateHiddenClips = ({ hiddenClips, broadcasterId }) => {
   })
 }
 
-export const getConfig = (broadcasterId) => {
+export const getConfig = (broadcasterId, token) => {
   return fetch(`${endpoints.config}?broadcasterId=${broadcasterId}`, {
-    method: 'GET'
+    method: 'GET',
+    headers: {
+      'Authorization': token
+    }
   })
     .then((res) => {
       if (!res.ok) {

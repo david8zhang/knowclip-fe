@@ -49,6 +49,7 @@ export default class ConfigPage extends React.Component{
         if(this.twitch){
             this.twitch.onAuthorized((auth)=>{
                 this.Authentication.setToken(auth.token, auth.userId)
+                this.setState({ auth });
                 if(!this.state.finishedLoading){
                     // if the component hasn't finished loading (as in we've not set up after getting a token), let's set it up now.
     
@@ -63,7 +64,7 @@ export default class ConfigPage extends React.Component{
     }
 
     fetchConfig(userId) {
-      configApi.getConfig(userId).then((config) => {
+      configApi.getConfig(userId, this.state.auth.token).then((config) => {
         if (config) {
           this.setState({
             clipLimit: config.clipLimit,
@@ -86,7 +87,11 @@ export default class ConfigPage extends React.Component{
     saveFeaturedClips(featuredClips) {
       const featuredClipIds = featuredClips.map((c) => c.id);
       this.setState({ finishedLoading: false });
-      configApi.updateFeaturedClips({ featuredClips: featuredClipIds, broadcasterId: this.state.userId })
+      configApi.updateFeaturedClips({
+        featuredClips: featuredClipIds,
+        broadcasterId: this.state.userId,
+        token: this.state.auth.token
+      })
         .then(() => {
           this.setState({
             finishedLoading: true,
@@ -115,7 +120,11 @@ export default class ConfigPage extends React.Component{
     saveHiddenClips(hiddenClips) {
       const hiddenClipIds = hiddenClips.map((c) => c.id);
       this.setState({ finishedLoading: false });
-      configApi.updateHiddenClips({ hiddenClips: hiddenClipIds, broadcasterId: this.state.userId })
+      configApi.updateHiddenClips({
+        hiddenClips: hiddenClipIds,
+        broadcasterId: this.state.userId,
+        token: this.state.auth.token
+      })
         .then(() => {
           this.setState({
             finishedLoading: true,
@@ -150,7 +159,11 @@ export default class ConfigPage extends React.Component{
         dragging
       }
       this.setState({ finishedLoading: false })
-      configApi.updateOrCreateConfig({ config: newConfig, broadcasterId: userId })
+      configApi.updateOrCreateConfig({
+        config: newConfig,
+        broadcasterId: userId,
+        token: this.state.auth.token
+      })
         .then(() => {
           console.log('Successfully updated configuration!');
           this.setState({
